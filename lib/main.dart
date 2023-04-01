@@ -13,10 +13,23 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-int getNumber() => Random().nextInt(6) + 1;
+int getNumber() => Random().nextInt(5) + 1;
 
 class _MyAppState extends State<MyApp> {
   var diceNumber = getNumber();
+  var imgList = List<Image>.generate(
+    6,
+    (index) => Image.asset('assets/dice_${index + 1}.png'),
+  );
+  @override
+  void initState() {
+    super.initState();
+
+    for (var img in imgList) {
+      precacheImage(img.image, context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -31,21 +44,37 @@ class _MyAppState extends State<MyApp> {
             ),
           ),
           body: Center(
-            child: Column(
+            child: Flex(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              direction: Axis.vertical,
               children: [
-                Image.asset('assets/dice_$diceNumber.png'),
-                Text('$diceNumber'),
-                ElevatedButton(
-                    onPressed: () => {
-                          setState(
-                            () {
-                              diceNumber = getNumber();
-                            },
-                          )
-                        },
-                    child: const Text(
-                      "Roll Dice",
-                    )),
+                Expanded(
+                  flex: 2,
+                  child: imgList[diceNumber],
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      Text('You got the number: ${diceNumber + 1}'),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                            onPressed: () => {
+                                  setState(
+                                    () {
+                                      diceNumber = getNumber();
+                                    },
+                                  )
+                                },
+                            child: const Text(
+                              "Roll Dice",
+                            )),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           )),
